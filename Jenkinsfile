@@ -10,11 +10,11 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat "docker build -t %IMAGE_NAME%:%IMAGE_TAG% ."
+                bat "docker build --no-cache -t %IMAGE_NAME%:%IMAGE_TAG% ."
             }
         }
 
-        stage('Load Image Into Minikube') {
+        stage('Load Into Minikube') {
             steps {
                 bat "\"C:\\Program Files\\Kubernetes\\Minikube\\minikube.exe\" image load %IMAGE_NAME%:%IMAGE_TAG%"
             }

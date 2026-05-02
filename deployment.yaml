@@ -1,5 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
   name: cicd-app
 
@@ -17,8 +18,8 @@ spec:
 
     spec:
       containers:
-      - name: cicd-app
-        image: sn9729/cicd-app:latest
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 5000
+        - name: cicd-app
+          image: cicd-app:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5000

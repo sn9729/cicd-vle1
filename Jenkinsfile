@@ -1,13 +1,9 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE = "sn9729/cicd-app:latest"
-    }
-
     stages {
 
-        stage('Clone Code') {
+        stage('Clone Latest Code') {
             steps {
                 git branch: 'main',
                 url: 'https://github.com/sn9729/cicd-vle1.git'
@@ -16,32 +12,18 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t %IMAGE% .'
+                bat 'docker build -t cicd-app:latest .'
             }
         }
 
-        stage('Docker Login') {
+        stage('Load Into Minikube') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
-                }
+                bat 'minikube image load cicd-app'
             }
         }
 
-        stage('Push Image') {
+        stage('Deploy Update') {
             steps {
-                bat 'docker push %IMAGE%'
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                bat 'kubectl apply -f deployment.yaml'
-                bat 'kubectl apply -f service.yaml'
                 bat 'kubectl rollout restart deployment/cicd-app'
             }
         }

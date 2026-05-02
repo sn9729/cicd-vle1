@@ -5,19 +5,19 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t cicd-app:latest .'
+                bat 'docker build -t cicd-app:latest .'
             }
         }
 
-        stage('Load Into Minikube') {
+        stage('Load Image Into Minikube') {
             steps {
-                sh 'minikube image load cicd-app'
+                bat 'minikube image load cicd-app'
             }
         }
 
-        stage('Deploy Update') {
+        stage('Restart Kubernetes Deployment') {
             steps {
-                sh 'kubectl rollout restart deployment/cicd-app'
+                bat 'kubectl rollout restart deployment/cicd-app'
             }
         }
     }

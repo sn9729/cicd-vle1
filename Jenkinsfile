@@ -11,7 +11,7 @@ pipeline {
 
         stage('Load Image Into Minikube') {
             steps {
-                bat 'minikube image load cicd-app'
+                bat '"C:\\Program Files\\Kubernetes\\Minikube\\minikube.exe" image load cicd-app'
             }
         }
 

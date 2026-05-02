@@ -1,30 +1,48 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE = "sn9729/cicd-app:latest"
+    }
+
     stages {
 
         stage('Clone Code') {
             steps {
-                git 'https://github.com/sn9729/cicd-vle1.git'
+                git branch: 'main',
+                url: 'https://github.com/sn9729/cicd-vle1.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t sn9729/cicd-app:latest .'
+                bat 'docker build -t %IMAGE% .'
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Docker Login') {
             steps {
-                sh 'docker push sn9729/cicd-app:latest'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
+                }
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                bat 'docker push %IMAGE%'
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f deployment.yaml'
-                sh 'kubectl apply -f service.yaml'
+                bat 'kubectl apply -f deployment.yaml'
+                bat 'kubectl apply -f service.yaml'
+                bat 'kubectl rollout restart deployment/cicd-app'
             }
         }
     }

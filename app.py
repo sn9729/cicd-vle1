@@ -7,7 +7,7 @@ app = Flask(__name__)
 def home():
     response = make_response(render_template(
         "index.html",
-        version="2.0",
+        version="3.0",
         updated=datetime.now().strftime("%d-%m-%Y %H:%M:%S")
     ))
 
